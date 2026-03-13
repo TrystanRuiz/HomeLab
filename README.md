@@ -94,7 +94,7 @@ General use and Windows-specific testing. Also planning to use it for malware an
 ```
 Internet
     |
-Spectrum Router
+ Router
     |
 192.168.1.0/24
     |
