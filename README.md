@@ -1,178 +1,124 @@
-# 🏠 HomeLab
+# HomeLab
 
-A personal homelab built on **Proxmox VE** running on bare metal. This repo documents the full infrastructure, services, and configuration.
+Personal homelab running on Proxmox VE. Built this to get hands-on experience with self-hosting, networking, and security tooling. Still a work in progress.
 
 ---
 
-## 🖥️ Hardware
+## Hardware
 
 | Component | Details |
 |-----------|---------|
 | Hypervisor | Proxmox VE |
-| CPU | x86_64 |
 | RAM | 16GB |
 | Storage | ~240GB LVM |
-| Network | Spectrum ISP |
+| Network | Home LAN |
 
 ---
 
-## 🗺️ Infrastructure Overview
+## Infrastructure
 
 ```
 Proxmox Host (192.168.1.50)
-├── CT 100 — Grafana + Prometheus   (Monitoring)
-├── CT 101 — Gitea                  (Self-hosted Git)
-├── CT 102 — Authelia               (SSO / Auth gateway)
-├── CT 103 — Splunk Enterprise      (SIEM / Log analysis)
-├── CT 106 — Nginx Proxy Manager    (Reverse proxy)
-├── CT 107 — Trilium Notes          (Self-hosted notes)
-├── VM 104 — Kali Linux 2025.4      (Penetration testing)
-└── VM 105 — Windows 11             (General use / Testing)
+├── CT 100 — Grafana + Prometheus
+├── CT 101 — Gitea
+├── CT 102 — Authelia
+├── CT 103 — Splunk Enterprise
+├── CT 106 — Nginx Proxy Manager
+├── CT 107 — Trilium Notes
+├── VM 104 — Kali Linux 2025.4
+└── VM 105 — Windows 11
 ```
 
 ---
 
-## 🧩 Services
+## Services
 
-### 📊 Grafana + Prometheus (CT 100)
-**Purpose:** Infrastructure monitoring and metrics visualization
+### Grafana + Prometheus
+Monitoring stack. Prometheus scrapes metrics from the Proxmox host via Node Exporter. Grafana visualizes it with the Node Exporter Full dashboard.
 
-- **Prometheus** scrapes metrics from the Proxmox host via Node Exporter
-- **Grafana** displays dashboards with CPU, RAM, disk, and network metrics
-- Node Exporter Full dashboard (ID 1860) pre-configured
-- Accessible at `http://192.168.1.191:3000`
-
-> 📸 _Screenshot placeholder — Grafana dashboard_
+> _Screenshot coming soon_
 
 ---
 
-### 🐙 Gitea (CT 101)
-**Purpose:** Self-hosted Git server — local mirror of all GitHub repositories
+### Gitea
+Self-hosted Git server. Acts as a local mirror of my GitHub repos so I have an offline copy of everything.
 
-- Full GitHub-compatible Git server
-- All repositories mirrored from GitHub
-- Accessible at `http://192.168.1.70:3000`
-
-> 📸 _Screenshot placeholder — Gitea dashboard_
+> _Screenshot coming soon_
 
 ---
 
-### 🔐 Authelia (CT 102)
-**Purpose:** Single Sign-On (SSO) and two-factor authentication gateway
+### Authelia
+SSO and 2FA gateway. Sits in front of internal services so everything requires authentication before you can access it. Supports TOTP.
 
-- Protects internal services with a unified login portal
-- Supports TOTP (2FA) via Google Authenticator or similar
-- Argon2id password hashing
-- Accessible at `https://192.168.1.89:9091`
-
-> 📸 _Screenshot placeholder — Authelia login page_
+> _Screenshot coming soon_
 
 ---
 
-### 🔎 Splunk Enterprise (CT 103)
-**Purpose:** SIEM — log ingestion, search, and security event analysis
+### Splunk Enterprise
+SIEM for log ingestion and analysis. Using it to learn log analysis and practice detection engineering. Configured to receive logs on port 9997.
 
-- Splunk Enterprise 10.2.1
-- Configured to receive logs on port 9997
-- Web UI for searching and analyzing logs
-- Accessible at `http://192.168.1.111:8000`
-
-> 📸 _Screenshot placeholder — Splunk search interface_
+> _Screenshot coming soon_
 
 ---
 
-### 🔁 Nginx Proxy Manager (CT 106)
-**Purpose:** Reverse proxy for routing traffic to internal services
+### Nginx Proxy Manager
+Reverse proxy with a web UI. Routes traffic to internal services and handles SSL. Also wired up to a Cloudflare Tunnel for when I need external access.
 
-- Web-based UI for managing proxy hosts
-- Integrates with Cloudflare Tunnel for optional external access
-- Manages SSL termination
-- Admin at `http://192.168.1.208:81`
-
-> 📸 _Screenshot placeholder — NPM dashboard_
+> _Screenshot coming soon_
 
 ---
 
-### 📝 Trilium Notes (CT 107)
-**Purpose:** Self-hosted knowledge base and note-taking
+### Trilium Notes
+Self-hosted note taking app. Using it to document the homelab and take notes while studying. All data stays local.
 
-- Hierarchical note structure
-- All data stored locally on Proxmox
-- Accessible at `http://192.168.1.221:8080`
-
-> 📸 _Screenshot placeholder — Trilium interface_
+> _Screenshot coming soon_
 
 ---
 
-### 🐉 Kali Linux 2025.4 (VM 104)
-**Purpose:** Penetration testing and security research
+### Kali Linux 2025.4
+Used for CTF practice, pentesting labs, and general security research. Full desktop environment.
 
-- Full Kali Linux desktop environment
-- Pre-installed security toolset
-- Used for CTFs, lab testing, and security practice
-
-> 📸 _Screenshot placeholder — Kali desktop_
+> _Screenshot coming soon_
 
 ---
 
-### 🪟 Windows 11 (VM 105)
-**Purpose:** General use and Windows-specific testing
+### Windows 11
+General use and Windows-specific testing. Also planning to use it for malware analysis down the road.
 
-- Windows 11 Home
-- UEFI boot with TPM 2.0
-- Used for testing Windows-specific tooling and malware analysis
-
-> 📸 _Screenshot placeholder — Windows 11 desktop_
+> _Screenshot coming soon_
 
 ---
 
-## 🌐 Networking
+## Networking
 
 ```
 Internet
-    │
-Spectrum Router (71.47.x.x public)
-    │
-192.168.1.0/24 LAN
-    │
-Proxmox Host (192.168.1.50)
-    │
-Linux Bridge (vmbr0)
-    ├── All LXC containers (DHCP)
-    └── All VMs (DHCP)
+    |
+Spectrum Router
+    |
+192.168.1.0/24
+    |
+Proxmox (192.168.1.50)
+    |
+vmbr0 bridge
+    |-- LXC containers
+    |-- VMs
 ```
 
-- All services are **local network only** — not publicly accessible
-- Cloudflare Tunnel installed but DNS records removed for privacy
-- Remote access via **Tailscale** (planned)
+Everything is local only right now. Cloudflare Tunnel is set up but DNS records are pulled so nothing is public facing. Planning to add Tailscale for remote access.
 
 ---
 
-## 🔒 Security
+## Planned
 
-- All containers use SSH key authentication
-- Authelia provides SSO with 2FA support
-- Cloudflare Tunnel available for secure external access when needed
-- Proxmox API tokens used instead of root credentials where possible
-- Services isolated in separate LXC containers
-
----
-
-## 🗓️ Planned
-
-- [ ] Tailscale for remote access
-- [ ] Authelia wired up to protect all services via NPM
-- [ ] Splunk receiving logs from all containers
-- [ ] pfSense or OPNsense for network segmentation
-- [ ] Wazuh for host-based intrusion detection
+- Tailscale for remote access
+- Authelia protecting all services through NPM
+- Splunk ingesting logs from all containers
+- Network segmentation with VLANs
+- Wazuh for HIDS
 
 ---
 
-## 📁 Repo Structure
+## Notes
 
-```
-HomeLab/
-├── README.md          # This file
-├── docs/              # Architecture diagrams and notes
-└── screenshots/       # Service screenshots (coming soon)
-```
+Still learning as I go. A lot of this was set up through trial and error. Happy to answer questions if anything here looks interesting.
