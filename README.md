@@ -1,5 +1,7 @@
 # HomeLab
 
+https://trystanruiz.tech/infrastructure
+
 A self-hosted homelab built on Proxmox VE running on bare metal. Everything runs as LXC containers or VMs on a single node. The goal was to get hands-on experience with Linux administration, networking, containerization, and security monitoring — stuff you don't really learn just reading about it.
 
 ---
