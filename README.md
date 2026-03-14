@@ -113,10 +113,3 @@ Remote Access: Tailscale (subnet router on Proxmox)
 ```
 
 ---
-
-## Planned
-
-- Wire up Authelia to protect services behind SSO
-- Connect Splunk to live log sources (syslog from containers, SSH auth logs)
-- Set up alerting in Grafana for resource thresholds
-- Cloudflare Zero Trust when going public-facing
