@@ -1,91 +1,92 @@
 # HomeLab
 
-Personal homelab running on Proxmox VE. Built this to get hands-on experience with self-hosting, networking, and security tooling. Still a work in progress.
-
----
-
-## Hardware
-
-| Component | Details |
-|-----------|---------|
-| Hypervisor | Proxmox VE |
-| RAM | 16GB |
-| Storage | ~240GB LVM |
-| Network | Home LAN |
+A self-hosted homelab built on Proxmox VE running on bare metal. Everything runs as LXC containers or VMs on a single node. The goal was to get hands-on experience with Linux administration, networking, containerization, and security monitoring — stuff you don't really learn just reading about it.
 
 ---
 
 ## Infrastructure
 
-```
-Proxmox Host (192.168.1.50)
-├── CT 100 — Grafana + Prometheus
-├── CT 101 — Gitea
-├── CT 102 — Authelia
-├── CT 103 — Splunk Enterprise
-├── CT 106 — Nginx Proxy Manager
-├── CT 107 — Trilium Notes
-├── VM 104 — Kali Linux 2025.4
-└── VM 105 — Windows 11
-```
+**Host:** Proxmox VE 9.1 — 6 cores, 16GB RAM, 68GB SSD + LVM storage  
+**Network:** All services on 192.168.1.0/24, remote access via Tailscale subnet routing  
+**OS:** Debian 12 (LXC containers), Kali Linux 2025.4 (VM), Windows 11 (VM)
+
+| ID | Hostname | IP | Service |
+|----|----------|----|---------|
+| CT 100 | grafana | 192.168.1.191 | Grafana + Prometheus |
+| CT 101 | gitea | 192.168.1.70 | Gitea (self-hosted Git) |
+| CT 102 | authelia | 192.168.1.89 | Authelia SSO |
+| CT 103 | splunk | 192.168.1.111 | Splunk Enterprise SIEM |
+| CT 106 | npm | 192.168.1.208 | Nginx Proxy Manager |
+| CT 107 | trilium | 192.168.1.221 | Trilium Notes |
+| VM 104 | kali | 192.168.1.54 | Kali Linux 2025.4 |
+| VM 105 | windows11 | DHCP | Windows 11 Home |
 
 ---
 
-## Services
+## Proxmox
 
-### Grafana + Prometheus
-Monitoring stack. Prometheus scrapes metrics from the Proxmox host via Node Exporter. Grafana visualizes it with the Node Exporter Full dashboard.
+Proxmox VE handles all the virtualization. Containers run as unprivileged LXC with systemd namespace overrides. VMs use QEMU/KVM. Storage is split between local (ISOs, templates) and local-lvm (thin provisioned container/VM disks).
 
-> _Screenshot coming soon_
-
----
-
-### Gitea
-Self-hosted Git server. Acts as a local mirror of my GitHub repos so I have an offline copy of everything.
-
-> _Screenshot coming soon_
+![Proxmox Dashboard](docs/screenshots/proxmox.png)
 
 ---
 
-### Authelia
-SSO and 2FA gateway. Sits in front of internal services so everything requires authentication before you can access it. Supports TOTP.
+## Grafana + Prometheus
 
-> _Screenshot coming soon_
+Grafana pulls metrics from Prometheus which scrapes Node Exporter running on the Proxmox host. Gives real-time visibility into CPU, memory, disk, and network across the whole server.
 
----
-
-### Splunk Enterprise
-SIEM for log ingestion and analysis. Using it to learn log analysis and practice detection engineering. Configured to receive logs on port 9997.
-
-> _Screenshot coming soon_
+![Grafana Dashboard](docs/screenshots/grafana.png)
 
 ---
 
-### Nginx Proxy Manager
-Reverse proxy with a web UI. Routes traffic to internal services and handles SSL. Also wired up to a Cloudflare Tunnel for when I need external access.
+## Splunk SIEM
 
-> _Screenshot coming soon_
+Splunk Enterprise ingesting Windows Security event logs, Sysmon telemetry, firewall logs, and web server access logs. Built a custom SOC dashboard with detections for:
 
----
+- Suspicious process chains (parent/child analysis)
+- LOLBin abuse — certutil, bitsadmin, mshta, rundll32
+- Encoded PowerShell and download cradles
+- lsass memory access attempts
+- Lateral movement indicators (PsExec, WMI, PS Remoting)
+- Privilege escalation patterns
+- Brute force login tracking
+- Outbound network anomalies (C2 ports, LOLBin connections)
 
-### Trilium Notes
-Self-hosted note taking app. Using it to document the homelab and take notes while studying. All data stays local.
+MITRE ATT&CK technique IDs mapped to each detection.
 
-> _Screenshot coming soon_
-
----
-
-### Kali Linux 2025.4
-Used for CTF practice, pentesting labs, and general security research. Full desktop environment.
-
-> _Screenshot coming soon_
+![Splunk SOC Dashboard](docs/screenshots/splunk.png)
 
 ---
 
-### Windows 11
-General use and Windows-specific testing. Also planning to use it for malware analysis down the road.
+## Gitea
 
-> _Screenshot coming soon_
+Self-hosted Git server. All personal projects and lab configs live here, mirrored to GitHub. Runs on Debian 12 LXC, ~200MB RAM usage at idle.
+
+![Gitea](docs/screenshots/gitea.png)
+
+---
+
+## Nginx Proxy Manager
+
+Reverse proxy for all internal services. Each service gets a subdomain under trystanruiz.tech with DNS managed through Nginx Proxy Manager. All proxy hosts visible in the dashboard, currently HTTP only (internal network only, not public facing).
+
+![Nginx Proxy Manager](docs/screenshots/npm.png)
+
+---
+
+## Trilium Notes
+
+Self-hosted note-taking and knowledge base. Used for lab documentation, runbooks, and notes. Runs on Node.js in a Debian 12 LXC container.
+
+![Trilium Notes](docs/screenshots/trilium.png)
+
+---
+
+## Tailscale
+
+Tailscale installed on the Proxmox host advertising the full 192.168.1.0/24 subnet. From any device with Tailscale running, all homelab services are accessible by LAN IP without any port forwarding or VPN config. Two machines currently in the tailnet — the Proxmox host and my MacBook.
+
+![Tailscale](docs/screenshots/tailscale.png)
 
 ---
 
@@ -94,31 +95,27 @@ General use and Windows-specific testing. Also planning to use it for malware an
 ```
 Internet
     |
- Router
+ Router (192.168.1.1)
     |
-192.168.1.0/24
-    |
-Proxmox (192.168.1.50)
-    |
-vmbr0 bridge
-    |-- LXC containers
-    |-- VMs
-```
+ Proxmox Host (192.168.1.50)
+    |-- vmbr0 (Linux bridge)
+         |-- CT 100  grafana     192.168.1.191
+         |-- CT 101  gitea       192.168.1.70
+         |-- CT 102  authelia    192.168.1.89
+         |-- CT 103  splunk      192.168.1.111
+         |-- CT 106  npm         192.168.1.208
+         |-- CT 107  trilium     192.168.1.221
+         |-- VM 104  kali        192.168.1.54
+         |-- VM 105  windows11   DHCP
 
-Everything is local only right now. Cloudflare Tunnel is set up but DNS records are pulled so nothing is public facing. Planning to add Tailscale for remote access.
+Remote Access: Tailscale (subnet router on Proxmox)
+```
 
 ---
 
 ## Planned
 
-- Tailscale for remote access
-- Authelia protecting all services through NPM
-- Splunk ingesting logs from all containers
-- Network segmentation with VLANs
-- Wazuh for HIDS
-
----
-
-## Notes
-
-Still learning as I go. A lot of this was set up through trial and error. Happy to answer questions if anything here looks interesting.
+- Wire up Authelia to protect services behind SSO
+- Connect Splunk to live log sources (syslog from containers, SSH auth logs)
+- Set up alerting in Grafana for resource thresholds
+- Cloudflare Zero Trust when going public-facing
