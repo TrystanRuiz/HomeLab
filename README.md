@@ -1,7 +1,3 @@
-Junior at UCF studying Information Technology. CompTIA Security+ certified, Network+ and CySA+ in progress. Focused on blue team, security monitoring, and building things hands-on. Currently looking for internships, feel free to look around.
-
----
-
 # HomeLab
 
 A home server running Proxmox VE with a handful of self-hosted services — Gitea, Splunk, Grafana, Nginx Proxy Manager, Authelia, and Trilium. Services run as LXC containers on a single node with remote access set up through Tailscale. Built and configured everything from scratch including the networking, storage, and a Splunk SOC dashboard with Sysmon detections.
