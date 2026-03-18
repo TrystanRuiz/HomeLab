@@ -1,6 +1,6 @@
 # HomeLab
 
-A home server running Proxmox VE with a handful of self-hosted services — Gitea, Splunk, Grafana, Nginx Proxy Manager, Authelia, and Trilium. Services run as LXC containers on a single node with remote access set up through Tailscale. Built and configured everything from scratch including the networking, storage, and a Splunk SOC dashboard with Sysmon detections.
+A home server running Proxmox VE with a handful of self-hosted services — Gitea, Splunk, Grafana, Nginx Proxy Manager, Authelia, Trilium, and Homepage. Services run as LXC containers on a single node with remote access set up through Tailscale. Built and configured everything from scratch including the networking, storage, and a Splunk SOC dashboard with Sysmon detections.
 
 ---
 
@@ -18,6 +18,7 @@ A home server running Proxmox VE with a handful of self-hosted services — Gite
 | CT 103 | splunk | 192.168.1.111 | Splunk Enterprise SIEM |
 | CT 106 | npm | 192.168.1.208 | Nginx Proxy Manager |
 | CT 107 | trilium | 192.168.1.221 | Trilium Notes |
+| CT 108 | homepage | 192.168.1.108 | Homepage Dashboard |
 | VM 104 | kali | 192.168.1.54 | Kali Linux 2025.4 |
 | VM 105 | windows11 | DHCP | Windows 11 Home |
 
@@ -28,6 +29,14 @@ A home server running Proxmox VE with a handful of self-hosted services — Gite
 Proxmox VE handles all the virtualization. Containers run as unprivileged LXC with systemd namespace overrides. VMs use QEMU/KVM. Storage is split between local (ISOs, templates) and local-lvm (thin provisioned container/VM disks).
 
 ![Proxmox Dashboard](docs/screenshots/proxmox.png)
+
+---
+
+## Homepage
+
+Centralised dashboard for the entire homelab. All services accessible from one place with live system stats (CPU, RAM, disk) pulled directly from the host. Runs as a Docker container inside a Debian 12 LXC with nesting enabled. Config is fully file-based — services, bookmarks, and widgets all defined in YAML.
+
+![Homepage Dashboard](screenshots/homepage.png)
 
 ---
 
@@ -105,6 +114,7 @@ Internet
          |-- CT 103  splunk      192.168.1.111
          |-- CT 106  npm         192.168.1.208
          |-- CT 107  trilium     192.168.1.221
+         |-- CT 108  homepage    192.168.1.108
          |-- VM 104  kali        192.168.1.54
          |-- VM 105  windows11   DHCP
 
