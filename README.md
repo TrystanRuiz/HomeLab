@@ -34,7 +34,7 @@ Proxmox VE handles all the virtualization. Containers run as unprivileged LXC wi
 
 ## Homepage
 
-Centralised dashboard for the entire homelab. All services accessible from one place with live system stats (CPU, RAM, disk) pulled directly from the host. Runs as a Docker container inside a Debian 12 LXC with nesting enabled. Config is fully file-based — services, bookmarks, and widgets all defined in YAML.
+Custom dashboard that pulls together all homelab services in one place. Shows live CPU, RAM, and disk stats from the host. Runs as a Docker container inside a Debian 12 LXC with nesting enabled. Everything is configured through YAML files.
 
 ![Homepage Dashboard](screenshots/homepage.png)
 
