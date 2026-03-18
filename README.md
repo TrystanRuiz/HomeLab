@@ -1,6 +1,6 @@
 # HomeLab
 
-A home server running Proxmox VE with a handful of self-hosted services — Gitea, Splunk, Grafana, Nginx Proxy Manager, Authelia, Trilium, and Homepage. Services run as LXC containers on a single node with remote access set up through Tailscale. Built and configured everything from scratch including the networking, storage, and a Splunk SOC dashboard with Sysmon detections.
+A home server running Proxmox VE with a handful of self-hosted services — Gitea, Splunk, Grafana, Nginx Proxy Manager, Authelia, Memos, and Homepage. Services run as LXC containers on a single node with remote access set up through Tailscale. Built and configured everything from scratch including the networking, storage, and a Splunk SOC dashboard with Sysmon detections.
 
 ---
 
@@ -17,7 +17,7 @@ A home server running Proxmox VE with a handful of self-hosted services — Gite
 | CT 102 | authelia | 192.168.1.89 | Authelia SSO |
 | CT 103 | splunk | 192.168.1.111 | Splunk Enterprise SIEM |
 | CT 106 | npm | 192.168.1.208 | Nginx Proxy Manager |
-| CT 107 | trilium | 192.168.1.221 | Trilium Notes |
+| CT 107 | memos | 192.168.1.221 | Memos Journal |
 | CT 108 | homepage | 192.168.1.108 | Homepage Dashboard |
 | VM 104 | kali | 192.168.1.54 | Kali Linux 2025.4 |
 | VM 105 | windows11 | DHCP | Windows 11 Home |
@@ -83,11 +83,11 @@ Reverse proxy for all internal services. Each service gets a subdomain under try
 
 ---
 
-## Trilium Notes
+## Memos
 
-Self-hosted note-taking and knowledge base. Used for lab documentation, runbooks, and notes. Runs on Node.js in a Debian 12 LXC container.
+Self-hosted journaling app. Write notes directly in the browser, everything stays on the server. Runs as a Docker container in a Debian 12 LXC.
 
-![Trilium Notes](docs/screenshots/trilium.png)
+![Memos](docs/screenshots/memos.png)
 
 ---
 
@@ -113,7 +113,7 @@ Internet
          |-- CT 102  authelia    192.168.1.89
          |-- CT 103  splunk      192.168.1.111
          |-- CT 106  npm         192.168.1.208
-         |-- CT 107  trilium     192.168.1.221
+         |-- CT 107  memos       192.168.1.221
          |-- CT 108  homepage    192.168.1.108
          |-- VM 104  kali        192.168.1.54
          |-- VM 105  windows11   DHCP
